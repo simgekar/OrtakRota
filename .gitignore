@@ -29,3 +29,6 @@ Thumbs.db
 .env*
 secrets.json
 appsettings.*.local.json
+
+# Flutter: kök kuraldaki [Dd]ebug/ deseni Android debug manifestini dışlamasın
+!mobile/android/app/src/debug/

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>OrtakRota.Api</RootNamespace>
+    <!-- Web projesiyle aynı User Secrets kimliği: bağlantı dizesi iki projede ortak kullanılır -->
+    <UserSecretsId>ortakrota-web-7d1f0c2a-5b8e-4c1e-9a3f-2b6d4e8f1a90</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.4" />
+  </ItemGroup>
+
+  <!-- Varlık sınıfları ve AppDbContext web projesinden bağlantı (link) olarak alınır; kopyalanmaz -->
+  <ItemGroup>
+    <Compile Include="..\..\OrtakRota.Web\Models\**\*.cs"
+             Exclude="..\..\OrtakRota.Web\Models\ErrorViewModel.cs"
+             Link="Shared\Models\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\..\OrtakRota.Web\Data\AppDbContext.cs"
+             Link="Shared\Data\AppDbContext.cs" />
+  </ItemGroup>
+
+</Project>

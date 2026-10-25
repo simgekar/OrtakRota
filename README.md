@@ -1,7 +1,12 @@
 # OrtakRota – Arkadaşlarla Ortak Seyahat Planlayıcı
 
 Bir grup arkadaşın aynı gezi planı üzerinde birlikte ve eş zamanlı çalışmasını sağlayan web portalı.
-BLM4581 Ağ Tabanlı Teknolojiler ve Uygulamaları dersi dönem projesidir (2026–2027 Güz).
+Depoda iki dersin dönem projesi birlikte bulunur (2026–2027 Güz):
+
+- **BLM4581 Ağ Tabanlı Teknolojiler ve Uygulamaları:** ASP.NET Core MVC web portalı (`OrtakRota.Web/`)
+- **BLM4587 iOS ile Mobil Uygulama Geliştirme I (Flutter):** ASP.NET Core Web API (`api/`) ve Flutter mobil uygulama (`mobile/`)
+
+Üç parça da aynı PostgreSQL veritabanını ve aynı varlık sınıflarını kullanır.
 
 **Grup üyeleri:** Simge Karsavuranoğlu ([@simgekar](https://github.com/simgekar)), Rana Berkdemir ([@Ranaberkdemir](https://github.com/Ranaberkdemir))
 
@@ -18,6 +23,9 @@ BLM4581 Ağ Tabanlı Teknolojiler ve Uygulamaları dersi dönem projesidir (2026
 ```
 OrtakRota/
 ├── OrtakRota.sln
+├── api/
+│   └── OrtakRota.Api/   Flutter uygulamasının kullandığı Web API (Swagger ile test edilir)
+├── mobile/              Flutter (Dart) mobil uygulama
 └── OrtakRota.Web/
     ├── Controllers/     MVC controller'ları
     ├── Data/            AppDbContext (EF Core)
@@ -114,3 +122,65 @@ Tarayıcıda `http://localhost:5080` adresini açın. Visual Studio'da `OrtakRot
 | Hafta | Lider | Yapılanlar |
 |---|---|---|
 | 1 | Simge Karsavuranoğlu | Depo, proje iskeleti, EF Core + PostgreSQL, varlık sınıfları, DbContext, ilk migration, Bootstrap sayfa düzeni |
+
+---
+
+# Mobil uygulama (BLM4587 – Flutter)
+
+## Web API'yi çalıştırma (`api/OrtakRota.Api`)
+
+Web API, web projesiyle **aynı veritabanını** kullanır. Varlık sınıfları ve `AppDbContext`, `OrtakRota.Web` klasöründen bağlantı (link) olarak derlenir; tablolar web projesindeki migration'larla oluşturulur.
+
+1. Yukarıdaki **2–4. adımları** uygulayın (veritabanı, User Secrets, `dotnet ef database update`). API, web projesiyle aynı `UserSecretsId` değerini kullandığı için bağlantı dizesini ayrıca girmenize gerek yoktur.
+2. API'yi başlatın:
+
+```bash
+cd api/OrtakRota.Api
+dotnet run
+```
+
+3. Swagger arayüzü: `http://localhost:5180/swagger`
+
+İlk çalıştırmada `Admin` ve `User` rolleri ile bir demo kullanıcı (`demo@ortakrota.com`) otomatik oluşturulur. JWT girişi eklenene kadar (2. hafta) yeni geziler bu kullanıcı adına kaydedilir.
+
+| Metot | Uç nokta | Açıklama |
+|---|---|---|
+| GET | `/api/trips` | Gezileri listeler |
+| GET | `/api/trips/{id}` | Gezi detayı (üyeler, mekan ve harcama sayısı) |
+| POST | `/api/trips` | Yeni gezi ekler (davet kodu otomatik üretilir) |
+| PUT | `/api/trips/{id}` | Geziyi günceller |
+| DELETE | `/api/trips/{id}` | Geziyi siler |
+
+## Flutter uygulamasını çalıştırma (`mobile/`)
+
+### Gerekenler
+
+- Flutter 3.35 veya üzeri (kontrol: `flutter --version`, `flutter doctor`)
+- Android Studio + Android emülatörü (ya da USB hata ayıklaması açık bir Android cihaz)
+
+### Adımlar
+
+```bash
+cd mobile
+flutter pub get
+flutter run
+```
+
+### API adresinin ayarlanması
+
+Varsayılan adres `http://10.0.2.2:5180` olarak `lib/config/api_config.dart` dosyasında tanımlıdır. Android emülatörü bilgisayardaki `localhost`'a `10.0.2.2` adresiyle ulaşır.
+
+Gerçek bir cihazda çalıştırırken bilgisayarın yerel IP adresini verin (API'yi de bu adresi dinleyecek şekilde başlatın):
+
+```bash
+# API tarafı
+dotnet run --urls http://0.0.0.0:5180
+# Mobil taraf
+flutter run --dart-define=API_URL=http://192.168.1.20:5180
+```
+
+## Mobil – haftalık ilerleme
+
+| Hafta | Lider | Yapılanlar |
+|---|---|---|
+| 1 | Simge Karsavuranoğlu | Web API projesi, Swagger, Trips CRUD uç noktaları, rol ve demo kullanıcı seed; Flutter projesi, go_router ile gezinme, Giriş ekranı (form doğrulama), API'den beslenen Gezilerim ve Gezi Detayı ekranları |
