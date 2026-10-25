@@ -1,0 +1,111 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<section class="hero text-white">
+    <div class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <h1 class="display-5 fw-bold">Geziyi birlikte planlayın.</h1>
+                <p class="lead mb-4">
+                    Nereye gidileceğini oylayın, günlük rotayı sürükle-bırak ile oluşturun,
+                    harcamaları paylaşın. Arkadaşlarınızın yaptığı her değişiklik ekranınıza anında gelsin.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-light btn-lg disabled" aria-disabled="true">
+                        <i class="bi bi-plus-circle me-1"></i>Gezi Oluştur
+                    </a>
+                    <a class="btn btn-outline-light btn-lg disabled" aria-disabled="true">
+                        <i class="bi bi-key me-1"></i>Davet Koduyla Katıl
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <i class="bi bi-map hero-icon"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="ozellikler" class="container py-5">
+    <h2 class="h3 fw-bold text-center mb-4">Neler yapabilirsiniz?</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col">
+            <div class="card h-100 feature-card">
+                <div class="card-body">
+                    <i class="bi bi-pin-map-fill feature-icon"></i>
+                    <h3 class="h5 card-title mt-2">Haritada işaretleyin</h3>
+                    <p class="card-text text-muted">Gidilecek yerleri harita üzerine pin bırakarak ekleyin, hepsini tek ekranda görün.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 feature-card">
+                <div class="card-body">
+                    <i class="bi bi-heart-fill feature-icon"></i>
+                    <h3 class="h5 card-title mt-2">Oylayın</h3>
+                    <p class="card-text text-muted">“Hangi restorana gidelim?” sorusunu +1 / –1 oylarıyla birlikte karara bağlayın.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 feature-card">
+                <div class="card-body">
+                    <i class="bi bi-arrows-move feature-icon"></i>
+                    <h3 class="h5 card-title mt-2">Sürükle-bırak rota</h3>
+                    <p class="card-text text-muted">Fikir havuzundaki mekanları günlere taşıyarak saat saat plan oluşturun.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 feature-card">
+                <div class="card-body">
+                    <i class="bi bi-calculator-fill feature-icon"></i>
+                    <h3 class="h5 card-title mt-2">Harcamaları paylaşın</h3>
+                    <p class="card-text text-muted">Harcamayı girin, kişilere bölün; gezi sonunda kimin kime ne kadar borcu olduğunu görün.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 feature-card">
+                <div class="card-body">
+                    <i class="bi bi-check2-square feature-icon"></i>
+                    <h3 class="h5 card-title mt-2">Ortak kontrol listesi</h3>
+                    <p class="card-text text-muted">Pasaport, şarj aleti, şemsiye… Yanınıza alacaklarınızı birlikte işaretleyin.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 feature-card">
+                <div class="card-body">
+                    <i class="bi bi-lightning-charge-fill feature-icon"></i>
+                    <h3 class="h5 card-title mt-2">Anlık güncelleme</h3>
+                    <p class="card-text text-muted">SignalR sayesinde arkadaşlarınızın değişiklikleri sayfayı yenilemeden ekranınızda.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="nasil-calisir" class="bg-light py-5">
+    <div class="container">
+        <h2 class="h3 fw-bold text-center mb-4">Nasıl çalışır?</h2>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="step-number">1</div>
+                <h3 class="h6 fw-bold">Gezi oluşturun</h3>
+                <p class="text-muted small">Gezinin adını ve tarihlerini girin, size özel davet kodu oluşsun.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="step-number">2</div>
+                <h3 class="h6 fw-bold">Arkadaşlarınızı davet edin</h3>
+                <p class="text-muted small">Davet kodunu paylaşın; arkadaşlarınız kodla geziye katılsın.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="step-number">3</div>
+                <h3 class="h6 fw-bold">Birlikte planlayın</h3>
+                <p class="text-muted small">Mekan ekleyin, oylayın, rotayı ve bütçeyi birlikte oluşturun.</p>
+            </div>
+        </div>
+    </div>
+</section>

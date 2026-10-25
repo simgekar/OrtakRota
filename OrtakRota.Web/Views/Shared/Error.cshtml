@@ -1,0 +1,14 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Hata";
+}
+
+<div class="container py-5">
+    <h1 class="text-danger">Bir hata oluştu.</h1>
+    <p class="lead">İsteğiniz işlenirken beklenmeyen bir sorun yaşandı.</p>
+
+    @if (Model.ShowRequestId)
+    {
+        <p><strong>İstek numarası:</strong> <code>@Model.RequestId</code></p>
+    }
+</div>
