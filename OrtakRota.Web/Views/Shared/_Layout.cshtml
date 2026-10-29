@@ -31,17 +31,38 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/#nasil-calisir">Nasıl Çalışır?</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Trips" asp-action="Index">Gezilerim</a>
+                            </li>
+                        }
                     </ul>
-                    <div class="d-flex gap-2">
-                        <a class="btn btn-outline-light btn-sm disabled" aria-disabled="true">Giriş Yap</a>
-                        <a class="btn btn-light btn-sm disabled" aria-disabled="true">Kayıt Ol</a>
-                    </div>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
 
     <main role="main" class="flex-grow-1">
+        @if (TempData["Message"] is string message)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @message
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["Error"] is string error)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            </div>
+        }
         @RenderBody()
     </main>
 

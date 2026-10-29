@@ -1,0 +1,26 @@
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    var currentUser = await UserManager.GetUserAsync(User);
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <span class="navbar-text text-white small">
+            <i class="bi bi-person-circle me-1"></i>@(currentUser?.FullName ?? User.Identity?.Name)
+        </span>
+        @if (User.IsInRole("Admin"))
+        {
+            <span class="badge bg-warning text-dark">Yönetici</span>
+        }
+        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-light btn-sm">Çıkış Yap</button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-light btn-sm" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+        <a class="btn btn-light btn-sm" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
+    </div>
+}

@@ -60,3 +60,15 @@ html {
 .btn:focus, .btn:active:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--ortak-primary);
 }
+
+.btn-ortak {
+    color: #fff;
+    background-color: var(--ortak-primary);
+    border-color: var(--ortak-primary);
+}
+
+.btn-ortak:hover, .btn-ortak:focus {
+    color: #fff;
+    background-color: var(--ortak-primary-dark);
+    border-color: var(--ortak-primary-dark);
+}

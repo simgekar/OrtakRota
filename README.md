@@ -117,11 +117,25 @@ dotnet run
 
 Tarayıcıda `http://localhost:5080` adresini açın. Visual Studio'da `OrtakRota.sln` dosyasını açıp **F5** ile de çalıştırabilirsiniz.
 
+### 6. Kullanıcı girişi ve roller
+
+İlk çalıştırmada `Admin` ve `User` rolleri ile iki hazır hesap otomatik oluşturulur (web ve API aynı hesapları kullanır):
+
+| Hesap | Şifre | Rol |
+|---|---|---|
+| `admin@ortakrota.com` | `Admin123` | Admin |
+| `demo@ortakrota.com` | `Demo123` | User |
+
+**Kayıt Ol** sayfasından açılan her yeni hesap `User` rolüyle başlar. Şifre en az 6 karakter olmalı ve en az bir büyük harf, bir küçük harf ve bir rakam içermelidir.
+
+Gezi içinde ayrıca üç yetki vardır: geziyi kuran **Kurucu (Owner)**, davet koduyla katılan **Düzenleyici (Editor)** ve kurucunun yetkisini düşürdüğü **İzleyici (Viewer)**.
+
 ## Haftalık ilerleme
 
 | Hafta | Lider | Yapılanlar |
 |---|---|---|
 | 1 | Simge Karsavuranoğlu | Depo, proje iskeleti, EF Core + PostgreSQL, varlık sınıfları, DbContext, ilk migration, Bootstrap sayfa düzeni |
+| 2 | Simge Karsavuranoğlu | ASP.NET Core Identity ile kayıt, giriş ve çıkış; Admin ve User rolleri; gezi oluşturma, listeleme, düzenleme ve silme; davet koduyla geziye katılma; gezi içi roller (Kurucu, Düzenleyici, İzleyici) |
 
 ---
 
