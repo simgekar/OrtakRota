@@ -132,24 +132,47 @@ Tarayıcıda `http://localhost:5080` adresini açın. Visual Studio'da `OrtakRot
 Web API, web projesiyle **aynı veritabanını** kullanır. Varlık sınıfları ve `AppDbContext`, `OrtakRota.Web` klasöründen bağlantı (link) olarak derlenir; tablolar web projesindeki migration'larla oluşturulur.
 
 1. Yukarıdaki **2–4. adımları** uygulayın (veritabanı, User Secrets, `dotnet ef database update`). API, web projesiyle aynı `UserSecretsId` değerini kullandığı için bağlantı dizesini ayrıca girmenize gerek yoktur.
-2. API'yi başlatın:
+2. JWT imzalama anahtarını User Secrets'a ekleyin (en az 32 karakter; **depoya konmaz**). PowerShell'de rastgele bir anahtar üretip kaydetmek için:
+
+```powershell
+cd api/OrtakRota.Api
+$key = [Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 }) -as [byte[]])
+dotnet user-secrets set "Jwt:Key" $key
+```
+
+3. API'yi başlatın:
 
 ```bash
 cd api/OrtakRota.Api
 dotnet run
 ```
 
-3. Swagger arayüzü: `http://localhost:5180/swagger`
+4. Swagger arayüzü: `http://localhost:5180/swagger`
 
-İlk çalıştırmada `Admin` ve `User` rolleri ile bir demo kullanıcı (`demo@ortakrota.com`) otomatik oluşturulur. JWT girişi eklenene kadar (2. hafta) yeni geziler bu kullanıcı adına kaydedilir.
+İlk çalıştırmada `Admin` ve `User` rolleri ile iki hazır hesap otomatik oluşturulur:
 
-| Metot | Uç nokta | Açıklama |
+| Hesap | Şifre | Rol |
 |---|---|---|
-| GET | `/api/trips` | Gezileri listeler |
-| GET | `/api/trips/{id}` | Gezi detayı (üyeler, mekan ve harcama sayısı) |
-| POST | `/api/trips` | Yeni gezi ekler (davet kodu otomatik üretilir) |
-| PUT | `/api/trips/{id}` | Geziyi günceller |
-| DELETE | `/api/trips/{id}` | Geziyi siler |
+| `admin@ortakrota.com` | `Admin123` | Admin |
+| `demo@ortakrota.com` | `Demo123` | User |
+
+### Swagger'da token ile test
+
+1. `POST /api/Auth/login` ile giriş yapın, yanıttaki `token` değerini kopyalayın.
+2. Sayfanın üstündeki **Authorize** butonuna basıp token'ı yapıştırın.
+3. Artık `Trips` ve (Admin ise) `Users` uç noktaları çağrılabilir. Token olmadan bu uç noktalar `401` döner.
+
+| Metot | Uç nokta | Yetki | Açıklama |
+|---|---|---|---|
+| POST | `/api/auth/register` | Herkes | Kayıt olur (User rolü), token döner |
+| POST | `/api/auth/login` | Herkes | Giriş yapar, token döner |
+| GET | `/api/auth/me` | Giriş yapmış | Token sahibinin bilgileri |
+| GET | `/api/trips` | Giriş yapmış | Üyesi olunan geziler (Admin: tümü) |
+| GET | `/api/trips/{id}` | Giriş yapmış | Gezi detayı (üyeler, mekan ve harcama sayısı) |
+| POST | `/api/trips` | Giriş yapmış | Yeni gezi ekler, ekleyen kişi kurucu (Owner) olur |
+| PUT | `/api/trips/{id}` | Kurucu / Admin | Geziyi günceller |
+| DELETE | `/api/trips/{id}` | Kurucu / Admin | Geziyi siler |
+| GET | `/api/users` | Admin | Tüm kullanıcılar ve rolleri |
 
 ## Flutter uygulamasını çalıştırma (`mobile/`)
 
@@ -184,3 +207,4 @@ flutter run --dart-define=API_URL=http://192.168.1.20:5180
 | Hafta | Lider | Yapılanlar |
 |---|---|---|
 | 1 | Simge Karsavuranoğlu | Web API projesi, Swagger, Trips CRUD uç noktaları, rol ve demo kullanıcı seed; Flutter projesi, go_router ile gezinme, Giriş ekranı (form doğrulama), API'den beslenen Gezilerim ve Gezi Detayı ekranları |
+| 2 | Simge Karsavuranoğlu | API: JWT ile kayıt/giriş, Admin ve User rolleri, yetkilendirilmiş Trips uç noktaları, Admin'e özel kullanıcı listesi, Swagger'da Authorize |
