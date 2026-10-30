@@ -1,0 +1,26 @@
+@model TripListItemViewModel
+@{
+    ViewData["Title"] = "Geziyi Sil";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 fw-bold text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Geziyi sil</h1>
+                    <p>
+                        <strong>@Model.Name</strong> gezisini silmek üzeresin
+                        (@Model.StartDate.ToString("dd.MM.yyyy") – @Model.EndDate.ToString("dd.MM.yyyy"), @Model.MemberCount üye).
+                    </p>
+                    <p class="text-muted small">Gezinin mekanları, planı, harcamaları ve kontrol listesi de silinir. Bu işlem geri alınamaz.</p>
+
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">Evet, sil</button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

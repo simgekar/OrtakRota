@@ -1,0 +1,30 @@
+@model TripFormViewModel
+@{
+    ViewData["Title"] = "Yeni Gezi";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <a asp-action="Index" class="small text-decoration-none"><i class="bi bi-arrow-left"></i> Gezilerim</a>
+            <h1 class="h3 fw-bold mt-2 mb-4">Yeni Gezi Oluştur</h1>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <partial name="_TripForm" model="Model" />
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-ortak">Oluştur</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <p class="text-muted small mt-3">Gezi oluşturulunca arkadaşlarınla paylaşabileceğin bir davet kodu üretilir.</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

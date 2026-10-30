@@ -1,0 +1,141 @@
+@model TripDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-4">
+    <a asp-action="Index" class="small text-decoration-none"><i class="bi bi-arrow-left"></i> Gezilerim</a>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mt-2 mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">@Model.Name</h1>
+            <p class="text-muted mb-0">
+                <i class="bi bi-calendar-event me-1"></i>@Model.StartDate.ToString("dd.MM.yyyy") – @Model.EndDate.ToString("dd.MM.yyyy")
+                · Kurucu: @Model.OwnerName
+                @if (Model.MyRole.HasValue)
+                {
+                    <span class="badge @Model.MyRole.Value.BadgeClass() ms-1">Rolün: @Model.MyRole.Value.ToTurkish()</span>
+                }
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            @if (Model.CanEdit)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil me-1"></i>Düzenle</a>
+            }
+            @if (Model.CanManage)
+            {
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Sil</a>
+            }
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h2 class="h6 fw-bold">Davet Kodu</h2>
+                    <p class="text-muted small">Bu kodu arkadaşlarınla paylaş, "Davet Koduyla Katıl" sayfasından geziye katılsınlar.</p>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="inviteCode" class="fs-4 fw-bold font-monospace">@Model.InviteCode</span>
+                        <button type="button" id="copyInviteCode" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-clipboard"></i> Kopyala
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="h6 fw-bold">Açıklama</h2>
+                        <p class="mb-0">@Model.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h6 fw-bold mb-3">Üyeler (@Model.Members.Count)</h2>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Ad Soyad</th>
+                                    <th class="d-none d-md-table-cell">E-posta</th>
+                                    <th>Rol</th>
+                                    @if (Model.CanManage)
+                                    {
+                                        <th class="text-end">İşlem</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var member in Model.Members)
+                                {
+                                    <tr>
+                                        <td>@member.FullName</td>
+                                        <td class="d-none d-md-table-cell text-muted small">@member.Email</td>
+                                        <td>
+                                            @if (Model.CanManage && member.Role != TripRole.Owner)
+                                            {
+                                                <form asp-action="ChangeRole" method="post" class="d-flex gap-1">
+                                                    <input type="hidden" name="tripId" value="@Model.Id" />
+                                                    <input type="hidden" name="userId" value="@member.UserId" />
+                                                    <select name="role" class="form-select form-select-sm w-auto">
+                                                        <option value="@TripRole.Editor" selected="@(member.Role == TripRole.Editor)">Düzenleyici</option>
+                                                        <option value="@TripRole.Viewer" selected="@(member.Role == TripRole.Viewer)">İzleyici</option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">Kaydet</button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge @member.Role.BadgeClass()">@member.Role.ToTurkish()</span>
+                                            }
+                                        </td>
+                                        @if (Model.CanManage)
+                                        {
+                                            <td class="text-end">
+                                                @if (member.Role != TripRole.Owner)
+                                                {
+                                                    <form asp-action="RemoveMember" method="post" class="d-inline">
+                                                        <input type="hidden" name="tripId" value="@Model.Id" />
+                                                        <input type="hidden" name="userId" value="@member.UserId" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Geziden çıkar">
+                                                            <i class="bi bi-person-dash"></i>
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 bg-light mt-4">
+                <div class="card-body text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>Fikir havuzu, harita ve oylama bir sonraki haftalarda bu sayfaya eklenecek.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('copyInviteCode')?.addEventListener('click', function () {
+            const code = document.getElementById('inviteCode').textContent.trim();
+            navigator.clipboard.writeText(code).then(() => {
+                this.innerHTML = '<i class="bi bi-check2"></i> Kopyalandı';
+            });
+        });
+    </script>
+}

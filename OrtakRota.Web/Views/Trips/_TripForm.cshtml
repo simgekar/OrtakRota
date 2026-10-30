@@ -1,0 +1,28 @@
+@model TripFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" placeholder="Örn. Kapadokya Hafta Sonu" />
+    <span asp-validation-for="Name" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Description" class="form-label"></label>
+    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Gezi hakkında kısa bir not (isteğe bağlı)"></textarea>
+    <span asp-validation-for="Description" class="text-danger small"></span>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+        <span asp-validation-for="StartDate" class="text-danger small"></span>
+    </div>
+    <div class="col-sm-6">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+        <span asp-validation-for="EndDate" class="text-danger small"></span>
+    </div>
+</div>
