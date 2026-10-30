@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../models/trip.dart';
 import '../services/trip_service.dart';
+import '../state/auth_provider.dart';
 
 class TripsScreen extends StatefulWidget {
   const TripsScreen({super.key});
@@ -13,27 +15,38 @@ class TripsScreen extends StatefulWidget {
 }
 
 class _TripsScreenState extends State<TripsScreen> {
-  final _service = TripService();
   late Future<List<Trip>> _tripsFuture;
 
   @override
   void initState() {
     super.initState();
-    _tripsFuture = _service.getTrips();
+    _tripsFuture = context.read<TripService>().getTrips();
   }
 
   Future<void> _refresh() async {
     setState(() {
-      _tripsFuture = _service.getTrips();
+      _tripsFuture = context.read<TripService>().getTrips();
     });
     await _tripsFuture.catchError((_) => <Trip>[]);
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().user;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gezilerim'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Gezilerim'),
+            if (user != null)
+              Text(
+                user.isAdmin ? '${user.fullName} · Yönetici' : user.fullName,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+          ],
+        ),
         actions: [
           IconButton(
             tooltip: 'Yenile',
@@ -43,7 +56,8 @@ class _TripsScreenState extends State<TripsScreen> {
           IconButton(
             tooltip: 'Çıkış',
             icon: const Icon(Icons.logout),
-            onPressed: () => context.go('/login'),
+            // Çıkış yapılınca router kullanıcıyı giriş ekranına yönlendirir
+            onPressed: () => context.read<AuthProvider>().logout(),
           ),
         ],
       ),

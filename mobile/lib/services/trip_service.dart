@@ -4,15 +4,8 @@ import '../config/api_config.dart';
 import '../models/trip.dart';
 
 class TripService {
-  TripService({Dio? dio})
-      : _dio = dio ??
-            Dio(
-              BaseOptions(
-                baseUrl: ApiConfig.baseUrl,
-                connectTimeout: const Duration(seconds: 10),
-                receiveTimeout: const Duration(seconds: 10),
-              ),
-            );
+  /// Dio, ApiClient'tan gelir; böylece token her isteğe otomatik eklenir.
+  TripService(this._dio);
 
   final Dio _dio;
 
@@ -31,8 +24,13 @@ class TripService {
   /// Hata nesnesini kullanıcıya gösterilecek Türkçe bir mesaja çevirir.
   static String errorMessage(Object error) {
     if (error is DioException) {
-      if (error.response?.statusCode == 404) {
-        return 'Gezi bulunamadı.';
+      switch (error.response?.statusCode) {
+        case 401:
+          return 'Oturumun sona erdi, lütfen tekrar giriş yap.';
+        case 403:
+          return 'Bu işlem için yetkin yok.';
+        case 404:
+          return 'Gezi bulunamadı.';
       }
       if (error.type == DioExceptionType.connectionError ||
           error.type == DioExceptionType.connectionTimeout) {

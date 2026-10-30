@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../services/auth_service.dart';
+import '../state/auth_provider.dart';
+import '../utils/validators.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -21,35 +27,23 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  String? _validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'E-posta zorunludur.';
-    }
-    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!emailRegex.hasMatch(value.trim())) {
-      return 'Geçerli bir e-posta adresi girin.';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Şifre zorunludur.';
-    }
-    if (value.length < 6) {
-      return 'Şifre en az 6 karakter olmalıdır.';
-    }
-    return null;
-  }
-
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // 2. haftada burada API'nin /api/auth/login uç noktası çağrılacak.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Giriş, 2. haftada Web API\'ye bağlanacak.')),
-    );
-    context.go('/trips');
+    final auth = context.read<AuthProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    setState(() => _isLoading = true);
+    try {
+      // Başarılı olursa router oturum değişikliğini görüp Gezilerim'e yönlendirir
+      await auth.login(_emailController.text.trim(), _passwordController.text);
+    } catch (error) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(AuthService.errorMessage(error))),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -92,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: 'E-posta',
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
-                      validator: _validateEmail,
+                      validator: Validators.email,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -111,15 +105,26 @@ class _LoginScreenState extends State<LoginScreen> {
                               () => _obscurePassword = !_obscurePassword),
                         ),
                       ),
-                      validator: _validatePassword,
+                      validator: Validators.loginPassword,
                     ),
                     const SizedBox(height: 24),
                     FilledButton(
-                      onPressed: _submit,
+                      onPressed: _isLoading ? null : _submit,
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('Giriş Yap'),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Giriş Yap'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: _isLoading ? null : () => context.go('/register'),
+                      child: const Text('Hesabın yok mu? Kayıt ol'),
                     ),
                   ],
                 ),

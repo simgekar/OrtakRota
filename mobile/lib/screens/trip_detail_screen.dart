@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../models/trip.dart';
 import '../services/trip_service.dart';
@@ -14,13 +15,12 @@ class TripDetailScreen extends StatefulWidget {
 }
 
 class _TripDetailScreenState extends State<TripDetailScreen> {
-  final _service = TripService();
   late Future<Trip> _tripFuture;
 
   @override
   void initState() {
     super.initState();
-    _tripFuture = _service.getTrip(widget.tripId);
+    _tripFuture = context.read<TripService>().getTrip(widget.tripId);
   }
 
   @override
