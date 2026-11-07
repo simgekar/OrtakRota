@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'screens/join_trip_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/trip_detail_screen.dart';
+import 'screens/trip_form_screen.dart';
 import 'screens/trips_screen.dart';
 import 'state/auth_provider.dart';
 
@@ -43,13 +45,31 @@ GoRouter createRouter(AuthProvider auth) {
       GoRoute(
         path: '/trips',
         builder: (context, state) => const TripsScreen(),
+        // Sabit yollar (new, join) ':id' yolundan önce tanımlanmalı
         routes: [
+          GoRoute(
+            path: 'new',
+            builder: (context, state) => const TripFormScreen(),
+          ),
+          GoRoute(
+            path: 'join',
+            builder: (context, state) => const JoinTripScreen(),
+          ),
           GoRoute(
             path: ':id',
             builder: (context, state) {
               final id = int.parse(state.pathParameters['id']!);
               return TripDetailScreen(tripId: id);
             },
+            routes: [
+              GoRoute(
+                path: 'edit',
+                builder: (context, state) {
+                  final id = int.parse(state.pathParameters['id']!);
+                  return TripFormScreen(tripId: id);
+                },
+              ),
+            ],
           ),
         ],
       ),

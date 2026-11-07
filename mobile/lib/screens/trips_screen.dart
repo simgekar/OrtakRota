@@ -24,10 +24,31 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
   Future<void> _refresh() async {
+    if (!mounted) return;
     setState(() {
       _tripsFuture = context.read<TripService>().getTrips();
     });
     await _tripsFuture.catchError((_) => <Trip>[]);
+  }
+
+  Future<void> _createTrip() async {
+    final created = await context.push<bool>('/trips/new');
+    if (created == true && mounted) _refresh();
+  }
+
+  // Davet koduyla katılınca liste yenilenir ve katılınan gezinin detayı açılır
+  Future<void> _joinTrip() async {
+    final tripId = await context.push<int>('/trips/join');
+    if (tripId == null || !mounted) return;
+    _refresh();
+    await context.push('/trips/$tripId');
+    if (mounted) _refresh();
+  }
+
+  Future<void> _openTrip(int id) async {
+    await context.push('/trips/$id');
+    // Detayda düzenleme, silme veya ayrılma olmuş olabilir
+    if (mounted) _refresh();
   }
 
   @override
@@ -49,6 +70,11 @@ class _TripsScreenState extends State<TripsScreen> {
         ),
         actions: [
           IconButton(
+            tooltip: 'Koda katıl',
+            icon: const Icon(Icons.group_add_outlined),
+            onPressed: _joinTrip,
+          ),
+          IconButton(
             tooltip: 'Yenile',
             icon: const Icon(Icons.refresh),
             onPressed: _refresh,
@@ -60,6 +86,11 @@ class _TripsScreenState extends State<TripsScreen> {
             onPressed: () => context.read<AuthProvider>().logout(),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _createTrip,
+        icon: const Icon(Icons.add),
+        label: const Text('Yeni Gezi'),
       ),
       body: FutureBuilder<List<Trip>>(
         future: _tripsFuture,
@@ -84,6 +115,9 @@ class _TripsScreenState extends State<TripsScreen> {
                   Icon(Icons.luggage_outlined, size: 64),
                   SizedBox(height: 12),
                   Text('Henüz bir gezin yok.', textAlign: TextAlign.center),
+                  SizedBox(height: 4),
+                  Text('"Yeni Gezi" ile oluştur ya da davet koduyla katıl.',
+                      textAlign: TextAlign.center),
                 ],
               ),
             );
@@ -95,11 +129,11 @@ class _TripsScreenState extends State<TripsScreen> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 700),
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 88),
                   itemCount: trips.length,
                   itemBuilder: (context, index) => _TripCard(
                     trip: trips[index],
-                    onTap: () => context.push('/trips/${trips[index].id}'),
+                    onTap: () => _openTrip(trips[index].id),
                   ),
                 ),
               ),
@@ -150,7 +184,14 @@ class _TripCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.group_outlined, size: 16),
                   const SizedBox(width: 6),
-                  Text('${trip.memberCount} üye · Kurucu: ${trip.ownerName}'),
+                  Expanded(
+                    child: Text(
+                      '${trip.memberCount} üye · Kurucu: ${trip.ownerName}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (trip.myRole != null)
+                    Text(roleLabelOf(trip.myRole), style: theme.textTheme.labelMedium),
                 ],
               ),
               if (trip.description != null && trip.description!.isNotEmpty) ...[

@@ -28,4 +28,33 @@ class Validators {
     if (!value.contains(RegExp(r'[0-9]'))) return 'Şifre en az bir rakam içermelidir.';
     return null;
   }
+
+  static String? tripName(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Gezi adı zorunludur.';
+    final length = value.trim().length;
+    if (length < 3 || length > 100) return 'Gezi adı 3-100 karakter arasında olmalıdır.';
+    return null;
+  }
+
+  static String? tripDescription(String? value) {
+    if (value != null && value.trim().length > 500) {
+      return 'Açıklama en fazla 500 karakter olabilir.';
+    }
+    return null;
+  }
+
+  static String? inviteCode(String? value) {
+    final code = value?.trim() ?? '';
+    if (code.isEmpty) return 'Davet kodu zorunludur.';
+    if (code.length != 6) return 'Davet kodu 6 karakterdir.';
+    return null;
+  }
+
+  /// Bitiş tarihi başlangıç tarihinden önce olamaz
+  static String? tripDates(DateTime? start, DateTime? end) {
+    if (start == null) return 'Başlangıç tarihi zorunludur.';
+    if (end == null) return 'Bitiş tarihi zorunludur.';
+    if (end.isBefore(start)) return 'Bitiş tarihi başlangıç tarihinden önce olamaz.';
+    return null;
+  }
 }
