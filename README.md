@@ -219,12 +219,19 @@ dotnet run
 | POST | `/api/auth/register` | Herkes | Kayıt olur (User rolü), token döner |
 | POST | `/api/auth/login` | Herkes | Giriş yapar, token döner |
 | GET | `/api/auth/me` | Giriş yapmış | Token sahibinin bilgileri |
-| GET | `/api/trips` | Giriş yapmış | Üyesi olunan geziler (Admin: tümü) |
-| GET | `/api/trips/{id}` | Giriş yapmış | Gezi detayı (üyeler, mekan ve harcama sayısı) |
+| GET | `/api/trips` | Giriş yapmış | Üyesi olunan geziler (Admin: tümü), `myRole` ile |
+| GET | `/api/trips/{id}` | Üye | Gezi detayı (üyeler, mekan ve harcama sayısı) |
 | POST | `/api/trips` | Giriş yapmış | Yeni gezi ekler, ekleyen kişi kurucu (Owner) olur |
-| PUT | `/api/trips/{id}` | Kurucu / Admin | Geziyi günceller |
-| DELETE | `/api/trips/{id}` | Kurucu / Admin | Geziyi siler |
+| PUT | `/api/trips/{id}` | Kurucu / Düzenleyici | Geziyi günceller |
+| DELETE | `/api/trips/{id}` | Kurucu | Geziyi siler |
+| POST | `/api/trips/join` | Giriş yapmış | Davet koduyla geziye Düzenleyici olarak katılır |
+| POST | `/api/trips/{id}/invite-code` | Kurucu | Davet kodunu yeniler (eski kod geçersiz olur) |
+| GET | `/api/trips/{id}/members` | Üye | Gezi üyeleri ve rolleri |
+| PUT | `/api/trips/{id}/members/{userId}` | Kurucu | Üyenin rolünü Düzenleyici / İzleyici yapar |
+| DELETE | `/api/trips/{id}/members/{userId}` | Kurucu / kendisi | Üyeyi çıkarır; kendi kimliğiyle çağrılırsa geziden ayrılır |
 | GET | `/api/users` | Admin | Tüm kullanıcılar ve rolleri |
+
+**Gezi içi roller:** Kurucu (Owner) her şeyi yapar; Düzenleyici (Editor) gezi bilgilerini günceller; İzleyici (Viewer) yalnızca görüntüler. Admin tüm gezilerde kurucu yetkisine sahiptir.
 
 ## Flutter uygulamasını çalıştırma (`mobile/`)
 
@@ -260,3 +267,4 @@ flutter run --dart-define=API_URL=http://192.168.1.20:5180
 |---|---|---|
 | 1 | Simge Karsavuranoğlu | Web API projesi, Swagger, Trips CRUD uç noktaları, rol ve demo kullanıcı seed; Flutter projesi, go_router ile gezinme, Giriş ekranı (form doğrulama), API'den beslenen Gezilerim ve Gezi Detayı ekranları |
 | 2 | Simge Karsavuranoğlu | API: JWT ile kayıt/giriş, Admin ve User rolleri, yetkilendirilmiş Trips uç noktaları, Admin'e özel kullanıcı listesi, Swagger'da Authorize |
+| 3 | Simge Karsavuranoğlu | API: davet koduyla katılma, gezi içi roller (Kurucu / Düzenleyici / İzleyici), üye yönetimi, davet kodu yenileme |

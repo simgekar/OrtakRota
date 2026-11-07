@@ -15,13 +15,18 @@ public class TripDto
     public string OwnerName { get; set; } = string.Empty;
     public int MemberCount { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    // Giriş yapan kullanıcının bu gezideki rolü (üye olmayan Admin için null)
+    public TripRole? MyRole { get; set; }
 }
 
 public class TripMemberDto
 {
     public string UserId { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public TripRole Role { get; set; }
+    public DateTime JoinedAt { get; set; }
 }
 
 public class TripDetailDto : TripDto
@@ -56,4 +61,22 @@ public class TripSaveDto : IValidatableObject
                 new[] { nameof(EndDate) });
         }
     }
+}
+
+public class JoinTripDto
+{
+    [Required(ErrorMessage = "Davet kodu zorunludur.")]
+    [StringLength(8, MinimumLength = 6, ErrorMessage = "Davet kodu 6 karakterdir.")]
+    public string InviteCode { get; set; } = string.Empty;
+}
+
+public class UpdateMemberRoleDto
+{
+    [Required(ErrorMessage = "Rol zorunludur.")]
+    public TripRole? Role { get; set; }
+}
+
+public class InviteCodeDto
+{
+    public string InviteCode { get; set; } = string.Empty;
 }
