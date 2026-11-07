@@ -16,7 +16,9 @@ Depoda iki dersin dönem projesi birlikte bulunur (2026–2027 Güz):
 - Entity Framework Core 10 + PostgreSQL (Npgsql), Code-First migration
 - ASP.NET Core Identity (kullanıcı ve roller)
 - Bootstrap 5, Bootstrap Icons, jQuery
-- Sonraki haftalarda: SignalR, Leaflet + OpenStreetMap, SortableJS, Swagger
+- Web API + Swagger (Microsoft.AspNetCore.OpenApi, Swashbuckle Swagger UI)
+- Leaflet + OpenStreetMap harita, Nominatim mekan arama
+- Sonraki haftalarda: SignalR, SortableJS
 
 ## Proje yapısı
 
@@ -130,12 +132,48 @@ Tarayıcıda `http://localhost:5080` adresini açın. Visual Studio'da `OrtakRot
 
 Gezi içinde ayrıca üç yetki vardır: geziyi kuran **Kurucu (Owner)**, davet koduyla katılan **Düzenleyici (Editor)** ve kurucunun yetkisini düşürdüğü **İzleyici (Viewer)**.
 
+### 7. Web API ve Swagger
+
+Web projesinin kendi REST API'si vardır; Fikir Havuzu sayfasındaki harita da mekanları bu API ile okur ve yazar.
+Uygulama çalışırken Swagger arayüzü: `http://localhost:5080/swagger`
+
+API, sitenin oturum çerezini kullanır. Swagger'da denemek için önce aynı tarayıcıda siteye giriş yapın, sonra `/swagger` sayfasını açın. Giriş yapılmadan çağrılan uç noktalar `401`, yetkisi olmayan işlemler `403` döner.
+
+| Metot | Uç nokta | Yetki | Açıklama |
+|---|---|---|---|
+| GET | `/api/trips` | Giriş yapmış | Üyesi olunan geziler (Admin: tümü) |
+| GET | `/api/trips/{id}` | Gezi üyesi | Gezi bilgisi |
+| POST | `/api/trips` | Giriş yapmış | Yeni gezi, ekleyen kişi Kurucu olur |
+| PUT | `/api/trips/{id}` | Kurucu / Düzenleyici | Geziyi günceller |
+| DELETE | `/api/trips/{id}` | Kurucu | Geziyi siler |
+| GET | `/api/trips/{tripId}/places` | Gezi üyesi | Gezinin mekanları (puana göre sıralı) |
+| GET | `/api/places/{id}` | Gezi üyesi | Mekan bilgisi |
+| POST | `/api/trips/{tripId}/places` | Kurucu / Düzenleyici | Geziye mekan ekler |
+| PUT | `/api/places/{id}` | Kurucu / Düzenleyici | Mekanı günceller |
+| DELETE | `/api/places/{id}` | Kurucu / Düzenleyici | Mekanı siler |
+
+Örnek mekan gövdesi (`POST /api/trips/1/places`):
+
+```json
+{
+  "name": "Galata Kulesi",
+  "category": "Sight",
+  "latitude": 41.025631,
+  "longitude": 28.974167,
+  "address": "Bereketzade, Galata Kulesi, Beyoğlu, İstanbul",
+  "note": "Gün batımında gidelim"
+}
+```
+
+Kategoriler: `Sight` (Gezilecek Yer), `Food` (Restoran / Kafe), `Museum` (Müze), `Accommodation` (Konaklama), `Shopping` (Alışveriş), `Other` (Diğer).
+
 ## Haftalık ilerleme
 
 | Hafta | Lider | Yapılanlar |
 |---|---|---|
 | 1 | Simge Karsavuranoğlu | Depo, proje iskeleti, EF Core + PostgreSQL, varlık sınıfları, DbContext, ilk migration, Bootstrap sayfa düzeni |
 | 2 | Simge Karsavuranoğlu | ASP.NET Core Identity ile kayıt, giriş ve çıkış; Admin ve User rolleri; gezi oluşturma, listeleme, düzenleme ve silme; davet koduyla geziye katılma; gezi içi roller (Kurucu, Düzenleyici, İzleyici) |
+| 3 | Simge Karsavuranoğlu | Web API: Geziler ve Mekanlar için tam CRUD, DTO'lar, Swagger; Leaflet + OpenStreetMap harita, haritaya tıklayarak konum seçme, Nominatim ile mekan arama; Fikir Havuzu sayfası |
 
 ---
 
