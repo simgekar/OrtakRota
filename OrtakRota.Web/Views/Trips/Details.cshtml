@@ -120,9 +120,15 @@
                 </div>
             </div>
 
-            <div class="card border-0 bg-light mt-4">
-                <div class="card-body text-muted small">
-                    <i class="bi bi-info-circle me-1"></i>Fikir havuzu, harita ve oylama bir sonraki haftalarda bu sayfaya eklenecek.
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div>
+                        <h2 class="h6 fw-bold mb-1"><i class="bi bi-map me-1"></i>Fikir Havuzu</h2>
+                        <p class="text-muted small mb-0">Gidilecek yerleri haritada işaretleyin ve listeleyin.</p>
+                    </div>
+                    <a asp-controller="Places" asp-action="Index" asp-route-tripId="@Model.Id" class="btn btn-ortak btn-sm">
+                        Haritayı Aç
+                    </a>
                 </div>
             </div>
         </div>

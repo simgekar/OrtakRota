@@ -1,0 +1,129 @@
+@model PlacesPageViewModel
+@{
+    ViewData["Title"] = "Fikir Havuzu";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 420px;
+            z-index: 0;
+        }
+
+        .place-card.active {
+            outline: 2px solid var(--ortak-primary);
+        }
+
+        .search-results .list-group-item {
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="container py-4" id="placesApp"
+     data-trip-id="@Model.TripId"
+     data-can-edit="@(Model.CanEdit ? "true" : "false")">
+
+    <a asp-controller="Trips" asp-action="Details" asp-route-id="@Model.TripId" class="small text-decoration-none">
+        <i class="bi bi-arrow-left"></i> @Model.TripName
+    </a>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mt-2 mb-3">
+        <div>
+            <h1 class="h3 fw-bold mb-0">Fikir Havuzu</h1>
+            <p class="text-muted mb-0">Gidilecek yerleri haritaya ekleyin, hepsini tek ekranda görün.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="input-group mb-2">
+                <input type="search" id="searchInput" class="form-control" placeholder="Mekan veya adres ara (örn. Galata Kulesi)" />
+                <button type="button" id="searchButton" class="btn btn-outline-secondary">
+                    <i class="bi bi-search"></i> Ara
+                </button>
+            </div>
+            <div id="searchResults" class="list-group search-results mb-2"></div>
+
+            <div id="map" class="rounded border shadow-sm"></div>
+            @if (Model.CanEdit)
+            {
+                <p class="small text-muted mt-2 mb-0">
+                    <i class="bi bi-hand-index me-1"></i>Yeni mekan eklemek için haritaya tıkla ya da yukarıdan ara. İşareti sürükleyerek konumu düzeltebilirsin.
+                </p>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            @if (Model.CanEdit)
+            {
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="h6 fw-bold mb-3" id="formTitle">Yeni Mekan</h2>
+                        <form id="placeForm" novalidate>
+                            <div id="formErrors" class="alert alert-danger py-2 small d-none" role="alert"></div>
+
+                            <div class="mb-2">
+                                <label for="placeName" class="form-label small mb-1">Mekan Adı</label>
+                                <input type="text" id="placeName" class="form-control form-control-sm" maxlength="150" required />
+                            </div>
+                            <div class="mb-2">
+                                <label for="placeCategory" class="form-label small mb-1">Kategori</label>
+                                <select id="placeCategory" class="form-select form-select-sm">
+                                    @foreach (var category in Enum.GetValues<PlaceCategory>())
+                                    {
+                                        <option value="@category">@category.GetDisplayName()</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <label for="placeLat" class="form-label small mb-1">Enlem</label>
+                                    <input type="text" id="placeLat" class="form-control form-control-sm" readonly placeholder="Haritadan seç" />
+                                </div>
+                                <div class="col-6">
+                                    <label for="placeLng" class="form-label small mb-1">Boylam</label>
+                                    <input type="text" id="placeLng" class="form-control form-control-sm" readonly placeholder="Haritadan seç" />
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label for="placeAddress" class="form-label small mb-1">Adres</label>
+                                <input type="text" id="placeAddress" class="form-control form-control-sm" maxlength="250" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="placeNote" class="form-label small mb-1">Not</label>
+                                <textarea id="placeNote" class="form-control form-control-sm" rows="2" maxlength="500"></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" id="saveButton" class="btn btn-ortak btn-sm">Ekle</button>
+                                <button type="button" id="cancelButton" class="btn btn-outline-secondary btn-sm d-none">Vazgeç</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary small">
+                    <i class="bi bi-eye me-1"></i>Bu gezide <strong>İzleyici</strong> rolündesin. Mekanları görebilirsin ama ekleyip değiştiremezsin.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+        <h2 class="h5 fw-bold mb-0">Mekanlar <span id="placeCount" class="text-muted fw-normal"></span></h2>
+    </div>
+    <div id="pageError" class="alert alert-danger d-none" role="alert"></div>
+    <div id="emptyState" class="text-center text-muted py-4 d-none">
+        <i class="bi bi-geo" style="font-size: 2.5rem;"></i>
+        <p class="mt-2 mb-0">Henüz mekan eklenmemiş.</p>
+    </div>
+    <div id="placeList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3"></div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="~/js/places.js" asp-append-version="true"></script>
+}
