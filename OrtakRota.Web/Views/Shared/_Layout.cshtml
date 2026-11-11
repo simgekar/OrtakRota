@@ -37,6 +37,12 @@
                                 <a class="nav-link" asp-controller="Trips" asp-action="Index">Gezilerim</a>
                             </li>
                         }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Index"><i class="bi bi-shield-lock me-1"></i>Yönetim</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

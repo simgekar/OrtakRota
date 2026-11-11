@@ -1,0 +1,57 @@
+@model List<AdminTripRow>
+@{
+    ViewData["Title"] = "Geziler";
+    ViewData["AdminTab"] = "Trips";
+}
+
+<div class="container py-4">
+    <partial name="_AdminNav" />
+
+    <form method="get" class="d-flex gap-2 mb-3" style="max-width: 420px;">
+        <input type="search" name="q" value="@ViewData["Query"]" class="form-control" placeholder="Gezi adı veya kurucu ara" />
+        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+    </form>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Gezi</th>
+                        <th class="d-none d-md-table-cell">Kurucu</th>
+                        <th class="d-none d-md-table-cell">Tarih</th>
+                        <th class="text-center">Üye</th>
+                        <th class="text-center">Mekan</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">Gezi bulunamadı.</td></tr>
+                    }
+                    @foreach (var trip in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Trips" asp-action="Details" asp-route-id="@trip.Id">@trip.Name</a>
+                                <div class="small text-muted d-md-none">@trip.OwnerName</div>
+                            </td>
+                            <td class="d-none d-md-table-cell">@trip.OwnerName</td>
+                            <td class="d-none d-md-table-cell small">@trip.StartDate.ToString("dd.MM.yyyy") – @trip.EndDate.ToString("dd.MM.yyyy")</td>
+                            <td class="text-center">@trip.MemberCount</td>
+                            <td class="text-center">
+                                <a asp-action="Places" asp-route-tripId="@trip.Id">@trip.PlaceCount</a>
+                            </td>
+                            <td class="text-end">
+                                <a asp-controller="Trips" asp-action="Delete" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-danger" title="Geziyi sil">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

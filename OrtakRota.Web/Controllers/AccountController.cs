@@ -88,7 +88,7 @@ public class AccountController : Controller
             return RedirectToLocal(returnUrl);
 
         if (result.IsLockedOut)
-            ModelState.AddModelError(string.Empty, "Çok fazla hatalı deneme yaptınız. Lütfen birkaç dakika sonra tekrar deneyin.");
+            ModelState.AddModelError(string.Empty, "Hesabınız kilitli. Çok fazla hatalı deneme yaptıysanız birkaç dakika sonra tekrar deneyin; yönetici tarafından kilitlendiyse yöneticiyle iletişime geçin.");
         else
             ModelState.AddModelError(string.Empty, "E-posta veya şifre hatalı.");
 

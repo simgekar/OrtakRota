@@ -167,6 +167,27 @@ API, sitenin oturum çerezini kullanır. Swagger'da denemek için önce aynı ta
 
 Kategoriler: `Sight` (Gezilecek Yer), `Food` (Restoran / Kafe), `Museum` (Müze), `Accommodation` (Konaklama), `Shopping` (Alışveriş), `Other` (Diğer).
 
+### 8. Oylama
+
+Fikir Havuzu sayfasında her mekanın altında **kalp (+1)** ve **beğenmeme (–1)** butonları vardır. Gezinin tüm üyeleri (İzleyici dahil) oy verebilir; her kullanıcının bir mekana tek oyu olur. Aynı butona tekrar basmak oyu geri alır, diğer butona basmak oyu değiştirir. Mekanlar toplam puana göre sıralanır, en yüksek puanlı mekan "En popüler" etiketi alır.
+
+| Metot | Uç nokta | Açıklama |
+|---|---|---|
+| GET | `/api/trips/{tripId}/votes/mine` | Giriş yapan kullanıcının bu gezideki oyları |
+| PUT | `/api/places/{id}/vote` | Oy ver veya değiştir, gövde: `{ "value": 1 }` ya da `{ "value": -1 }` |
+| DELETE | `/api/places/{id}/vote` | Oyu geri al |
+
+### 9. Yönetim paneli
+
+`Admin` rolündeki kullanıcılar menüde **Yönetim** bağlantısını görür (`/Admin`). Diğer kullanıcılar bu sayfalara girmeye çalışırsa "Erişim engellendi" sayfasına yönlendirilir.
+
+- **Özet:** kullanıcı, yönetici, kilitli hesap, gezi, mekan ve oy sayıları; son kayıt olan kullanıcılar ve son geziler
+- **Kullanıcılar:** arama, Admin rolü verme veya geri alma, hesabı kilitleme veya kilidi açma (kilitlenen kullanıcı giriş yapamaz, açık oturumu kapanır)
+- **Geziler:** tüm gezileri listeleme, arama ve silme
+- **Mekanlar:** gezi ve ada göre filtreleme, uygunsuz mekanları silme
+
+Yönetici kendi hesabını kilitleyemez ve kendi yönetici yetkisini kaldıramaz.
+
 ## Haftalık ilerleme
 
 | Hafta | Lider | Yapılanlar |
@@ -174,6 +195,7 @@ Kategoriler: `Sight` (Gezilecek Yer), `Food` (Restoran / Kafe), `Museum` (Müze)
 | 1 | Simge Karsavuranoğlu | Depo, proje iskeleti, EF Core + PostgreSQL, varlık sınıfları, DbContext, ilk migration, Bootstrap sayfa düzeni |
 | 2 | Simge Karsavuranoğlu | ASP.NET Core Identity ile kayıt, giriş ve çıkış; Admin ve User rolleri; gezi oluşturma, listeleme, düzenleme ve silme; davet koduyla geziye katılma; gezi içi roller (Kurucu, Düzenleyici, İzleyici) |
 | 3 | Simge Karsavuranoğlu | Web API: Geziler ve Mekanlar için tam CRUD, DTO'lar, Swagger; Leaflet + OpenStreetMap harita, haritaya tıklayarak konum seçme, Nominatim ile mekan arama; Fikir Havuzu sayfası |
+| 4 | Simge Karsavuranoğlu | Yönetim paneli (kullanıcılar, rol atama, hesap kilitleme, gezi ve mekan yönetimi); mekanlar için +1 / –1 oylama, kullanıcı başına tek oy, puana göre sıralama |
 
 ---
 

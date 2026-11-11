@@ -1,0 +1,85 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Yönetim Paneli";
+    ViewData["AdminTab"] = "Index";
+}
+
+<div class="container py-4">
+    <partial name="_AdminNav" />
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-3 mb-4">
+        <div class="col"><div class="card border-0 shadow-sm h-100"><div class="card-body">
+            <div class="text-muted small">Kullanıcı</div><div class="fs-3 fw-bold">@Model.UserCount</div>
+        </div></div></div>
+        <div class="col"><div class="card border-0 shadow-sm h-100"><div class="card-body">
+            <div class="text-muted small">Yönetici</div><div class="fs-3 fw-bold">@Model.AdminCount</div>
+        </div></div></div>
+        <div class="col"><div class="card border-0 shadow-sm h-100"><div class="card-body">
+            <div class="text-muted small">Kilitli hesap</div><div class="fs-3 fw-bold">@Model.LockedCount</div>
+        </div></div></div>
+        <div class="col"><div class="card border-0 shadow-sm h-100"><div class="card-body">
+            <div class="text-muted small">Gezi</div><div class="fs-3 fw-bold">@Model.TripCount</div>
+        </div></div></div>
+        <div class="col"><div class="card border-0 shadow-sm h-100"><div class="card-body">
+            <div class="text-muted small">Mekan</div><div class="fs-3 fw-bold">@Model.PlaceCount</div>
+        </div></div></div>
+        <div class="col"><div class="card border-0 shadow-sm h-100"><div class="card-body">
+            <div class="text-muted small">Oy</div><div class="fs-3 fw-bold">@Model.VoteCount</div>
+        </div></div></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h2 class="h6 fw-bold mb-0">Son kayıt olan kullanıcılar</h2>
+                        <a asp-action="Users" class="small">Tümü</a>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var user in Model.RecentUsers)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span>
+                                    @user.FullName
+                                    @if (user.IsAdmin)
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">Yönetici</span>
+                                    }
+                                    <br /><span class="small text-muted">@user.Email</span>
+                                </span>
+                                <span class="small text-muted">@user.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h2 class="h6 fw-bold mb-0">Son oluşturulan geziler</h2>
+                        <a asp-action="Trips" class="small">Tümü</a>
+                    </div>
+                    @if (Model.RecentTrips.Count == 0)
+                    {
+                        <p class="text-muted small mb-0">Henüz gezi yok.</p>
+                    }
+                    <ul class="list-group list-group-flush">
+                        @foreach (var trip in Model.RecentTrips)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span>
+                                    <a asp-controller="Trips" asp-action="Details" asp-route-id="@trip.Id">@trip.Name</a>
+                                    <br /><span class="small text-muted">Kurucu: @trip.OwnerName · @trip.MemberCount üye · @trip.PlaceCount mekan</span>
+                                </span>
+                                <span class="small text-muted">@trip.StartDate.ToString("dd.MM.yyyy")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

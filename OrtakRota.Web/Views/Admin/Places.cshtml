@@ -1,0 +1,73 @@
+@model AdminPlacesViewModel
+@{
+    ViewData["Title"] = "Mekanlar";
+    ViewData["AdminTab"] = "Places";
+}
+
+<div class="container py-4">
+    <partial name="_AdminNav" />
+
+    <form method="get" class="row g-2 mb-3" style="max-width: 640px;">
+        <div class="col-sm-6">
+            <select name="tripId" class="form-select">
+                <option value="">Tüm geziler</option>
+                @foreach (var trip in Model.Trips)
+                {
+                    <option value="@trip.Id" selected="@(trip.Id == Model.TripId)">@trip.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-sm-6 d-flex gap-2">
+            <input type="search" name="q" value="@Model.Query" class="form-control" placeholder="Mekan adı ara" />
+            <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mekan</th>
+                        <th class="d-none d-md-table-cell">Gezi</th>
+                        <th class="d-none d-lg-table-cell">Kategori</th>
+                        <th class="d-none d-lg-table-cell">Ekleyen</th>
+                        <th class="text-center">Puan</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Places.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">Mekan bulunamadı.</td></tr>
+                    }
+                    @foreach (var place in Model.Places)
+                    {
+                        <tr>
+                            <td>
+                                @place.Name
+                                <div class="small text-muted d-md-none">@place.TripName</div>
+                            </td>
+                            <td class="d-none d-md-table-cell">
+                                <a asp-controller="Places" asp-action="Index" asp-route-tripId="@place.TripId">@place.TripName</a>
+                            </td>
+                            <td class="d-none d-lg-table-cell small">@place.Category.GetDisplayName()</td>
+                            <td class="d-none d-lg-table-cell small">@place.AddedByName</td>
+                            <td class="text-center">@place.Score</td>
+                            <td class="text-end">
+                                <form asp-action="DeletePlace" method="post" class="d-inline"
+                                      onsubmit="return confirm('Bu mekan silinsin mi?');">
+                                    <input type="hidden" name="id" value="@place.Id" />
+                                    <input type="hidden" name="tripId" value="@Model.TripId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Mekanı sil">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

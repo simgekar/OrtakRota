@@ -1,0 +1,92 @@
+@model List<AdminUserRow>
+@inject UserManager<AppUser> UserManager
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    ViewData["AdminTab"] = "Users";
+    var currentUserId = UserManager.GetUserId(User);
+}
+
+<div class="container py-4">
+    <partial name="_AdminNav" />
+
+    <form method="get" class="d-flex gap-2 mb-3" style="max-width: 420px;">
+        <input type="search" name="q" value="@ViewData["Query"]" class="form-control" placeholder="Ad veya e-posta ara" />
+        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+    </form>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ad Soyad</th>
+                        <th class="d-none d-md-table-cell">E-posta</th>
+                        <th>Rol</th>
+                        <th class="d-none d-lg-table-cell">Gezi</th>
+                        <th class="d-none d-lg-table-cell">Kayıt</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">Kullanıcı bulunamadı.</td></tr>
+                    }
+                    @foreach (var user in Model)
+                    {
+                        var isSelf = user.Id == currentUserId;
+                        <tr class="@(user.IsLocked ? "table-secondary" : "")">
+                            <td>
+                                @user.FullName
+                                @if (isSelf)
+                                {
+                                    <span class="badge bg-light text-dark border ms-1">Sen</span>
+                                }
+                                @if (user.IsLocked)
+                                {
+                                    <span class="badge bg-danger ms-1"><i class="bi bi-lock"></i> Kilitli</span>
+                                }
+                                <div class="small text-muted d-md-none">@user.Email</div>
+                            </td>
+                            <td class="d-none d-md-table-cell small">@user.Email</td>
+                            <td>
+                                @if (user.IsAdmin)
+                                {
+                                    <span class="badge bg-warning text-dark">Yönetici</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Kullanıcı</span>
+                                }
+                            </td>
+                            <td class="d-none d-lg-table-cell">@user.TripCount</td>
+                            <td class="d-none d-lg-table-cell small text-muted">@user.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                            <td class="text-end">
+                                @if (!isSelf)
+                                {
+                                    <div class="d-inline-flex gap-1">
+                                        <form asp-action="ToggleAdmin" asp-route-id="@user.Id" method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-warning text-nowrap"
+                                                    title="@(user.IsAdmin ? "Yönetici yetkisini kaldır" : "Yönetici yap")">
+                                                <i class="bi @(user.IsAdmin ? "bi-shield-minus" : "bi-shield-plus")"></i>
+                                                <span class="d-none d-xl-inline">@(user.IsAdmin ? "Yetkiyi kaldır" : "Yönetici yap")</span>
+                                            </button>
+                                        </form>
+                                        <form asp-action="ToggleLock" asp-route-id="@user.Id" method="post">
+                                            <button type="submit" class="btn btn-sm @(user.IsLocked ? "btn-outline-success" : "btn-outline-danger") text-nowrap"
+                                                    title="@(user.IsLocked ? "Kilidi aç" : "Hesabı kilitle")">
+                                                <i class="bi @(user.IsLocked ? "bi-unlock" : "bi-lock")"></i>
+                                                <span class="d-none d-xl-inline">@(user.IsLocked ? "Kilidi aç" : "Kilitle")</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="small text-muted mt-2">Kilitlenen kullanıcı giriş yapamaz; açık oturumu da kapanır. Kendi hesabında işlem yapamazsın.</p>
+</div>
