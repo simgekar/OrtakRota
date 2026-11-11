@@ -251,6 +251,13 @@ dotnet run
 | GET | `/api/trips/{id}/members` | Üye | Gezi üyeleri ve rolleri |
 | PUT | `/api/trips/{id}/members/{userId}` | Kurucu | Üyenin rolünü Düzenleyici / İzleyici yapar |
 | DELETE | `/api/trips/{id}/members/{userId}` | Kurucu / kendisi | Üyeyi çıkarır; kendi kimliğiyle çağrılırsa geziden ayrılır |
+| GET | `/api/trips/{tripId}/places` | Üye | Fikir havuzundaki mekanlar, puana göre sıralı (`?category=Museum` ile filtre) |
+| GET | `/api/places/{id}` | Üye | Mekan detayı (puan, oylar, kendi oyun) |
+| POST | `/api/trips/{tripId}/places` | Kurucu / Düzenleyici | Mekan önerir (ad, kategori, konum, adres, not) |
+| PUT | `/api/places/{id}` | Ekleyen / Kurucu | Mekanı günceller |
+| DELETE | `/api/places/{id}` | Ekleyen / Kurucu | Mekanı siler |
+| PUT | `/api/places/{id}/vote` | Üye | `+1` / `-1` oy verir ya da oyunu değiştirir |
+| DELETE | `/api/places/{id}/vote` | Üye | Oyunu geri alır |
 | GET | `/api/users` | Admin | Tüm kullanıcılar ve rolleri |
 
 **Gezi içi roller:** Kurucu (Owner) her şeyi yapar; Düzenleyici (Editor) gezi bilgilerini günceller; İzleyici (Viewer) yalnızca görüntüler. Admin tüm gezilerde kurucu yetkisine sahiptir.
@@ -290,3 +297,4 @@ flutter run --dart-define=API_URL=http://192.168.1.20:5180
 | 1 | Simge Karsavuranoğlu | Web API projesi, Swagger, Trips CRUD uç noktaları, rol ve demo kullanıcı seed; Flutter projesi, go_router ile gezinme, Giriş ekranı (form doğrulama), API'den beslenen Gezilerim ve Gezi Detayı ekranları |
 | 2 | Simge Karsavuranoğlu | API: JWT ile kayıt/giriş, Admin ve User rolleri, yetkilendirilmiş Trips uç noktaları, Admin'e özel kullanıcı listesi, Swagger'da Authorize |
 | 3 | Simge Karsavuranoğlu | API: davet koduyla katılma, gezi içi roller (Kurucu / Düzenleyici / İzleyici), üye yönetimi, davet kodu yenileme |
+| 4 | Simge Karsavuranoğlu | API: Fikir havuzu için Places uç noktaları (CRUD, kategori filtresi) ve Votes (+1/-1 oy, oyu değiştirme/geri alma, puana göre sıralama) |

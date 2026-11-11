@@ -65,6 +65,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
+// Swagger (OpenAPI) dokümanında da enum'lar sayı yerine isimleriyle görünsün (ör. "Museum", "Editor")
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 builder.Services.AddOpenApi(options => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
 
 // Flutter uygulaması tarayıcıda (web) çalıştırıldığında API'ye erişebilsin
