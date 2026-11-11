@@ -39,6 +39,7 @@ if (string.IsNullOrWhiteSpace(jwtOptions.Key) || Encoding.UTF8.GetByteCount(jwtO
 }
 builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TripAccessService>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
