@@ -1,5 +1,9 @@
 # OrtakRota – Arkadaşlarla Ortak Seyahat Planlayıcı
 
+> 📁 **Haftalık videolar ve belgeler (Google Drive)**
+> - **Web – BLM4581 Ağ Tabanlı Teknolojiler:** [OrtakRota (Web) Drive klasörü](https://drive.google.com/drive/folders/1DoQ8NhSyS5AhAVvxNIhvCh4xN5CHPGEH?usp=sharing)
+> - **Mobil – BLM4587 Flutter:** [OrtakRota Mobil Drive klasörü](https://drive.google.com/drive/folders/1Q3tAxEcVzw6KZS9-mEvfkRNg-UiJF0sf?usp=sharing)
+
 Bir grup arkadaşın aynı gezi planı üzerinde birlikte ve eş zamanlı çalışmasını sağlayan web portalı.
 Depoda iki dersin dönem projesi birlikte bulunur (2026–2027 Güz):
 
