@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import 'screens/join_trip_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/place_form_screen.dart';
+import 'screens/places_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/trip_detail_screen.dart';
 import 'screens/trip_form_screen.dart';
@@ -68,6 +70,31 @@ GoRouter createRouter(AuthProvider auth) {
                   final id = int.parse(state.pathParameters['id']!);
                   return TripFormScreen(tripId: id);
                 },
+              ),
+              // Fikir havuzu ve mekan formları
+              GoRoute(
+                path: 'places',
+                builder: (context, state) {
+                  final id = int.parse(state.pathParameters['id']!);
+                  return PlacesScreen(tripId: id);
+                },
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    builder: (context, state) {
+                      final id = int.parse(state.pathParameters['id']!);
+                      return PlaceFormScreen(tripId: id);
+                    },
+                  ),
+                  GoRoute(
+                    path: ':placeId/edit',
+                    builder: (context, state) {
+                      final id = int.parse(state.pathParameters['id']!);
+                      final placeId = int.parse(state.pathParameters['placeId']!);
+                      return PlaceFormScreen(tripId: id, placeId: placeId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

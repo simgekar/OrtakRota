@@ -68,6 +68,12 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     }
   }
 
+  Future<void> _openPlaces() async {
+    await context.push('/trips/${widget.tripId}/places');
+    // Fikir havuzunda mekan eklenmiş/silinmiş olabilir; sayılar güncellensin
+    _reload();
+  }
+
   Future<void> _edit() async {
     final changed = await context.push<bool>('/trips/${widget.tripId}/edit');
     if (changed == true) _reload();
@@ -174,6 +180,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
               myUserId: user?.id,
               canManage: canManage,
               onRefresh: () async => _reload(),
+              onOpenPlaces: _openPlaces,
               onCopyCode: () {
                 Clipboard.setData(ClipboardData(text: loaded.inviteCode));
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -203,6 +210,7 @@ class _TripDetailBody extends StatelessWidget {
     required this.onRegenerateCode,
     required this.onMemberAction,
     required this.onLeave,
+    required this.onOpenPlaces,
   });
 
   final Trip trip;
@@ -213,6 +221,7 @@ class _TripDetailBody extends StatelessWidget {
   final VoidCallback onRegenerateCode;
   final void Function(TripMember member, String action) onMemberAction;
   final VoidCallback? onLeave;
+  final VoidCallback onOpenPlaces;
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +292,10 @@ class _TripDetailBody extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _StatCard(
-                        icon: Icons.place_outlined, label: 'Mekan', value: trip.placeCount),
+                        icon: Icons.place_outlined,
+                        label: 'Mekan',
+                        value: trip.placeCount,
+                        onTap: onOpenPlaces),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -293,6 +305,12 @@ class _TripDetailBody extends StatelessWidget {
                         value: trip.expenseCount),
                   ),
                 ],
+              ),
+              const SizedBox(height: 8),
+              FilledButton.tonalIcon(
+                onPressed: onOpenPlaces,
+                icon: const Icon(Icons.lightbulb_outline),
+                label: const Text('Fikir Havuzu ve Harita'),
               ),
               const SizedBox(height: 24),
               Text('Üyeler (${trip.members.length})', style: theme.textTheme.titleMedium),
@@ -348,16 +366,20 @@ class _TripDetailBody extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.icon, required this.label, required this.value});
+  const _StatCard({required this.icon, required this.label, required this.value, this.onTap});
 
   final IconData icon;
   final String label;
   final int value;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -367,6 +389,7 @@ class _StatCard extends StatelessWidget {
             Text(label),
           ],
         ),
+      ),
       ),
     );
   }

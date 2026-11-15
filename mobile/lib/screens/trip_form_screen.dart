@@ -34,7 +34,11 @@ class _TripFormScreenState extends State<TripFormScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.isEdit) _loadTrip();
+    // Yükleme ekran ilk kez çizildikten sonra başlar; initState içinde
+    // ScaffoldMessenger gibi üst widget'lara erişilemez
+    if (widget.isEdit) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadTrip());
+    }
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
+import 'package:ortakrota_mobile/models/place.dart';
 import 'package:ortakrota_mobile/models/trip.dart';
 import 'package:ortakrota_mobile/screens/login_screen.dart';
 import 'package:ortakrota_mobile/screens/register_screen.dart';
@@ -89,5 +90,34 @@ void main() {
     expect(withRole('Editor').canEdit, isTrue);
     expect(withRole('Editor').isOwner, isFalse);
     expect(withRole('Viewer').canEdit, isFalse);
+  });
+
+  test('Mekan JSON ve kategori bilgisi doğru okunur', () {
+    final place = Place.fromJson({
+      'id': 7,
+      'tripId': 1,
+      'name': 'Göreme Açık Hava Müzesi',
+      'category': 'Museum',
+      'latitude': 38.6431,
+      'longitude': 34.8455,
+      'addedById': 'u1',
+      'addedByName': 'Demo Kullanıcı',
+      'score': 2,
+      'upVotes': 3,
+      'downVotes': 1,
+      'myVote': 1,
+      'canEdit': true,
+    });
+
+    expect(place.categoryInfo.label, 'Müze');
+    expect(place.score, 2);
+    expect(place.myVote, 1);
+    expect(PlaceCategoryInfo.of('Bilinmeyen').label, 'Diğer');
+  });
+
+  test('Mekan adı doğrulanır', () {
+    expect(Validators.placeName(''), 'Mekan adı zorunludur.');
+    expect(Validators.placeName('A'), 'Mekan adı 2-150 karakter arasında olmalıdır.');
+    expect(Validators.placeName('Uçhisar Kalesi'), isNull);
   });
 }

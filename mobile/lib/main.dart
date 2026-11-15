@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'app_router.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
+import 'services/place_service.dart';
 import 'services/token_storage.dart';
 import 'services/trip_service.dart';
 import 'state/auth_provider.dart';
@@ -16,6 +17,7 @@ void main() {
   final apiClient = ApiClient(storage);
   final authProvider = AuthProvider(AuthService(apiClient, storage));
   final tripService = TripService(apiClient.dio);
+  final placeService = PlaceService(apiClient.dio);
 
   // Token süresi dolarsa (API 401 dönerse) kullanıcı otomatik çıkış yapar
   apiClient.onUnauthorized = authProvider.logout;
@@ -28,6 +30,7 @@ void main() {
       providers: [
         ChangeNotifierProvider.value(value: authProvider),
         Provider.value(value: tripService),
+        Provider.value(value: placeService),
       ],
       child: OrtakRotaApp(router: createRouter(authProvider)),
     ),

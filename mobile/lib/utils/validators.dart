@@ -57,4 +57,25 @@ class Validators {
     if (end.isBefore(start)) return 'Bitiş tarihi başlangıç tarihinden önce olamaz.';
     return null;
   }
+
+  static String? placeName(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Mekan adı zorunludur.';
+    final length = value.trim().length;
+    if (length < 2 || length > 150) return 'Mekan adı 2-150 karakter arasında olmalıdır.';
+    return null;
+  }
+
+  static String? placeAddress(String? value) {
+    if (value != null && value.trim().length > 250) {
+      return 'Adres en fazla 250 karakter olabilir.';
+    }
+    return null;
+  }
+
+  static String? placeNote(String? value) {
+    if (value != null && value.trim().length > 500) {
+      return 'Not en fazla 500 karakter olabilir.';
+    }
+    return null;
+  }
 }
