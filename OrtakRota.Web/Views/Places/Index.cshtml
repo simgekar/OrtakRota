@@ -18,6 +18,16 @@
         .search-results .list-group-item {
             cursor: pointer;
         }
+
+        .vote-btn.pop {
+            animation: vote-pop 0.35s ease;
+        }
+
+        @@keyframes vote-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
     </style>
 }
 
@@ -31,7 +41,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mt-2 mb-3">
         <div>
             <h1 class="h3 fw-bold mb-0">Fikir Havuzu</h1>
-            <p class="text-muted mb-0">Gidilecek yerleri haritaya ekleyin, hepsini tek ekranda görün.</p>
+            <p class="text-muted mb-0">Gidilecek yerleri haritaya ekleyin, kalp ile oylayın; en çok beğenilenler en üstte.</p>
         </div>
     </div>
 

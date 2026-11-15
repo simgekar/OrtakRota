@@ -29,6 +29,7 @@
     let draftMarker = null;    // eklenen / düzenlenen mekanın geçici işareti
     let places = [];
     let editingId = null;
+    const myVotes = new Map(); // mekan id -> kullanıcının oyu (+1 / -1)
 
     // --- Sayfa elemanları ---
     const listEl = document.getElementById('placeList');
@@ -62,16 +63,34 @@
         pageErrorEl.classList.remove('d-none');
     }
 
-    // --- Mekanları API'den yükle ve göster ---
+    // Puanı yüksek olan önce, eşitse ada göre
+    function sortPlaces() {
+        places.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, 'tr'));
+    }
+
+    // --- Mekanları ve kullanıcının oylarını API'den yükle ve göster ---
     async function loadPlaces(fitToMarkers) {
         pageErrorEl.classList.add('d-none');
         try {
-            const response = await fetch(`/api/trips/${tripId}/places`, { headers: { Accept: 'application/json' } });
-            if (!response.ok) {
-                showPageError('Mekanlar yüklenemedi (' + response.status + ').');
+            const headers = { Accept: 'application/json' };
+            const [placesResponse, votesResponse] = await Promise.all([
+                fetch(`/api/trips/${tripId}/places`, { headers }),
+                fetch(`/api/trips/${tripId}/votes/mine`, { headers })
+            ]);
+            if (!placesResponse.ok) {
+                showPageError('Mekanlar yüklenemedi (' + placesResponse.status + ').');
                 return;
             }
-            places = await response.json();
+            places = await placesResponse.json();
+
+            myVotes.clear();
+            if (votesResponse.ok) {
+                for (const vote of await votesResponse.json()) {
+                    myVotes.set(vote.placeId, vote.value);
+                }
+            }
+
+            sortPlaces();
             render(fitToMarkers);
         } catch {
             showPageError('Sunucuya ulaşılamadı. Sayfayı yenileyip tekrar deneyin.');
@@ -86,15 +105,15 @@
         countEl.textContent = places.length ? `(${places.length})` : '';
         emptyEl.classList.toggle('d-none', places.length > 0);
 
-        for (const place of places) {
+        places.forEach((place, index) => {
             const marker = L.marker([place.latitude, place.longitude])
-                .bindPopup(`<strong>${escapeHtml(place.name)}</strong><br><span class="text-muted">${escapeHtml(place.categoryName)}</span>`)
+                .bindPopup(`<strong>${escapeHtml(place.name)}</strong><br><span class="text-muted">${escapeHtml(place.categoryName)} · ${place.score} puan</span>`)
                 .addTo(markerLayer);
             marker.on('click', () => highlight(place.id));
             markers.set(place.id, marker);
 
-            listEl.appendChild(createCard(place));
-        }
+            listEl.appendChild(createCard(place, index === 0 && place.score > 0));
+        });
 
         if (fitToMarkers && places.length > 0) {
             const bounds = L.latLngBounds(places.map(p => [p.latitude, p.longitude]));
@@ -102,10 +121,11 @@
         }
     }
 
-    function createCard(place) {
+    function createCard(place, isTop) {
         const col = document.createElement('div');
         col.className = 'col';
         const icon = categoryIcons[place.category] || 'bi-geo-alt';
+        const myVote = myVotes.get(place.id) ?? 0;
 
         col.innerHTML = `
             <div class="card h-100 place-card" data-id="${place.id}">
@@ -116,9 +136,21 @@
                     </div>
                     ${place.address ? `<p class="small text-muted mb-1">${escapeHtml(place.address)}</p>` : ''}
                     ${place.note ? `<p class="small mb-1">${escapeHtml(place.note)}</p>` : ''}
+                    ${isTop ? '<span class="badge bg-warning text-dark mb-1"><i class="bi bi-trophy-fill me-1"></i>En popüler</span>' : ''}
                     <p class="small text-muted mb-0">Ekleyen: ${escapeHtml(place.addedByName)}</p>
                 </div>
-                <div class="card-footer bg-transparent border-0 pt-0 d-flex gap-2">
+                <div class="card-footer bg-transparent border-0 pt-0 d-flex flex-wrap align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-1 me-auto" title="${place.voteCount} oy">
+                        <button type="button" class="btn btn-sm vote-btn ${myVote === 1 ? 'btn-danger' : 'btn-outline-danger'}"
+                                data-action="up" title="Beğen (+1)" aria-pressed="${myVote === 1}">
+                            <i class="bi ${myVote === 1 ? 'bi-heart-fill' : 'bi-heart'}"></i>
+                        </button>
+                        <span class="fw-bold px-1 score">${place.score}</span>
+                        <button type="button" class="btn btn-sm vote-btn ${myVote === -1 ? 'btn-secondary' : 'btn-outline-secondary'}"
+                                data-action="down" title="Beğenme (-1)" aria-pressed="${myVote === -1}">
+                            <i class="bi ${myVote === -1 ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'}"></i>
+                        </button>
+                    </div>
                     <button type="button" class="btn btn-sm btn-outline-primary" data-action="show">
                         <i class="bi bi-geo-alt"></i> Haritada göster
                     </button>
@@ -133,6 +165,8 @@
             </div>`;
 
         col.querySelector('[data-action="show"]').addEventListener('click', () => focusPlace(place));
+        col.querySelector('[data-action="up"]').addEventListener('click', () => vote(place, 1));
+        col.querySelector('[data-action="down"]').addEventListener('click', () => vote(place, -1));
         if (canEdit) {
             col.querySelector('[data-action="edit"]').addEventListener('click', () => startEdit(place));
             col.querySelector('[data-action="delete"]').addEventListener('click', () => deletePlace(place));
@@ -151,6 +185,42 @@
         markers.get(place.id)?.openPopup();
         highlight(place.id);
         document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // --- Oylama: aynı butona tekrar basmak oyu geri alır, diğerine basmak oyu değiştirir ---
+    async function vote(place, value) {
+        const current = myVotes.get(place.id) ?? 0;
+        const removing = current === value;
+
+        try {
+            const response = await fetch(`/api/places/${place.id}/vote`, {
+                method: removing ? 'DELETE' : 'PUT',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: removing ? null : JSON.stringify({ value })
+            });
+            if (!response.ok) {
+                showPageError('Oy kaydedilemedi (' + response.status + ').');
+                return;
+            }
+
+            const result = await response.json();
+            place.score = result.score;
+            place.voteCount = result.voteCount;
+            if (result.myVote) {
+                myVotes.set(place.id, result.myVote);
+            } else {
+                myVotes.delete(place.id);
+            }
+
+            sortPlaces();
+            render(false);
+
+            // Basılan butona küçük bir "büyüyüp küçülme" animasyonu
+            const button = listEl.querySelector(`.place-card[data-id="${place.id}"] [data-action="${value === 1 ? 'up' : 'down'}"]`);
+            button?.classList.add('pop');
+        } catch {
+            showPageError('Sunucuya ulaşılamadı.');
+        }
     }
 
     // --- Mekan arama (Nominatim / OpenStreetMap) ---
